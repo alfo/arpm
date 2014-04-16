@@ -1,7 +1,7 @@
 module ARPM
   class Config
 
-    def self.home_directory
+    def self.base_directory
       if OS.windows?
         lib_dir = "/My Documents/Arduino/"
       else OS.mac?
