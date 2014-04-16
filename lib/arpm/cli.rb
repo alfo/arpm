@@ -23,6 +23,10 @@ module ARPM
 
         puts "Cloning #{name} into #{path}"
 
+        p package["repository"]
+
+        return
+
         repo = Git.clone(package["repository"], path)
 
         tags = []
@@ -46,6 +50,9 @@ module ARPM
           version = tags.first
 
           repo.checkout("tags/#{version}")
+
+          FileUtils.mv(path, "#{path}-#{version}")
+
           puts "Installed #{name} Version #{version}".green.bold
 
         end
