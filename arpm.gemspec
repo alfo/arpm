@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "thor", "~> 0.19"
   spec.add_runtime_dependency "colorize", "~> 0.7"
+  spec.add_runtime_dependency "git", "~> 1.2.6"
 end
