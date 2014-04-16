@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require 'arpm'
+
+ARPM::CLI.start(ARGV)
