@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>arpm by alfo</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>arpm</h1>
+        <h2>The Arduino Package Manager</h2>
+        <a href="https://github.com/alfo/arpm" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="arpm" class="anchor" href="#arpm"><span class="octicon octicon-link"></span></a>arpm</h1>
+
+<p>arpm is the Arduino Package Manager, a simple way to keep track of all the libraries used in an Arduino project.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install it via RubyGems:</p>
+
+<pre><code>$ gem install arpm
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>There are two ways of installing libraries, much like with other package managers such as RubyGems. You can either install them by hand, and use arpm as an easy way of quickly installing libraries, or you can use the Libfile to keep track of which libraries a project requires and allows anyone else to install all of them by running a single command, <code>arpm bundle</code>.</p>
+
+<h3>
+<a name="bundle" class="anchor" href="#bundle"><span class="octicon octicon-link"></span></a>Bundle</h3>
+
+<p>Projects should have a Libfile in their root (the folder with the <code>.ino</code> sketch file in it), which looks something like:</p>
+
+<pre><code>lib "bergcloud", "1.0"
+lib "time", "3.2"
+</code></pre>
+
+<p>Then, open a console in that directory and type:</p>
+
+<pre><code>$ arpm bundle
+</code></pre>
+
+<p>This will read the list of dependencies and install them into your Arduino's library directory (<code>~/Documents/Arduino/libraries</code> on OS X and <code>~\My Documents\Arduino\libaries</code> on Windows).</p>
+
+<h3>
+<a name="manual-installing" class="anchor" href="#manual-installing"><span class="octicon octicon-link"></span></a>Manual Installing</h3>
+
+<p>Manually installing libraries is as simple as running a command. For the most recent version of a library, run:</p>
+
+<pre><code>$ arpm install package_name
+</code></pre>
+
+<p>To specify a version, you can do this, for instance:</p>
+
+<pre><code>$ arpm install package_name 1.0
+</code></pre>
+
+<h2>
+<a name="registering-a-library" class="anchor" href="#registering-a-library"><span class="octicon octicon-link"></span></a>Registering a Library</h2>
+
+<p>So you've made a library and you want to get it on arpm? There are only 3 things you need to do:</p>
+
+<ol>
+<li>Put the source code for the library on GitHub (or some other Git host, like BitBucket)</li>
+<li>Create a release of your code with the tag of a version number (e.g. <code>1.0</code>)</li>
+<li>Add your library to <code>packages.json</code>
+</li>
+</ol><h3>
+<a name="putting-source-online" class="anchor" href="#putting-source-online"><span class="octicon octicon-link"></span></a>Putting Source Online</h3>
+
+<p>Push your source code to your favourite Git hosting site, and obtain an URL that looks like:</p>
+
+<blockquote>
+<p><a href="https://github.com/bergcloud/devshield-arduino.git">https://github.com/bergcloud/devshield-arduino.git</a></p>
+</blockquote>
+
+<h3>
+<a name="create-a-release" class="anchor" href="#create-a-release"><span class="octicon octicon-link"></span></a>Create a Release</h3>
+
+<p>This is as simple as going to the releases tab of the site you use. For GitHub, it's:</p>
+
+<blockquote>
+<p><a href="https://github.com/username/your-repository/releases">https://github.com/username/your-repository/releases</a></p>
+</blockquote>
+
+<p>Then hit the 'Create a New Release' button, and put the version number in the <code>tag</code> box. Make sure your version number starts with a number, and is separated by dots. Version numbers cannot contain <code>-</code> however because the Arduino IDE doesn't like them.</p>
+
+<p>For instance, <code>1.0</code>, <code>0.9.2</code> and <code>2.0.beta</code> are all valid version names.</p>
+
+<h3>
+<a name="adding-to-packagesjson" class="anchor" href="#adding-to-packagesjson"><span class="octicon octicon-link"></span></a>Adding to <code>packages.json</code>
+</h3>
+
+<p>First, fork this repository. Then edit the <code>packages.json</code> file, adding a section like this:</p>
+
+<pre><code>{
+  "name": "bergcloud",
+  "repository": "https://github.com/bergcloud/devshield-arduino.git",
+  "authors": ["Nick Ludlam", "Andy Huntington"],
+  "email": "info@bergcloud.com"
+}
+</code></pre>
+
+<p>Note: the <code>name</code> cannot contain dashes (<code>-</code>) either because Arduino doesn't like them. It can only contain letters, numbers, and underscores.</p>
+
+<p>Add the git URL you got earlier to the <code>repository</code> section.</p>
+
+<p>Make sure that there's a comma on the end of the previous repository (<code>},</code>) and one on the end of yours if there are packages after it.</p>
+
+<p>Then make a pull request, and if everything's fine, I'll merge it as soon as I can, and your package will go live.</p>
+
+<h2>
+<a name="contributing-to-source" class="anchor" href="#contributing-to-source"><span class="octicon octicon-link"></span></a>Contributing to Source</h2>
+
+<p>To contribute to the source of arpm:</p>
+
+<ol>
+<li>Fork it (<a href="https://github.com/alfo/arpm/fork">https://github.com/alfo/arpm/fork</a>)</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create a new Pull Request</li>
+</ol>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/alfo/arpm/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/alfo/arpm/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/alfo/arpm"></a> is maintained by <a href="https://github.com/alfo">alfo</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-28573924-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
