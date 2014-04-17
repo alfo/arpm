@@ -19,7 +19,6 @@ Projects should have a Libfile in their root (the folder with the `.ino` sketch 
 ```
 lib "bergcloud", "1.0"
 lib "time", "3.2"
-
 ```
 
 Then, open a console in that directory and type:
@@ -75,6 +74,10 @@ First, fork this repository. Then edit the `packages.json` file, adding a sectio
 }
 ```
 Note: the `name` cannot contain dashes (`-`) either because Arduino doesn't like them. It can only contain letters, numbers, and underscores.
+
+Add the git URL you got earlier to the `repository` section.
+
+Make sure that there's a comma on the end of the previous repository (`},`) and one on the end of yours if there are packages after it.
 
 Then make a pull request, and if everything's fine, I'll merge it as soon as I can, and your package will go live.
 
