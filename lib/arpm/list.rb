@@ -22,8 +22,10 @@ module ARPM
 
         # It isn't so add the whole package
         packages << {package.name => [version]}
+
       end
 
+      # Write that shit down
       f = File.open(path, 'w')
       f.write(JSON.generate(packages, :quirks_mode => true))
       f.close
@@ -49,6 +51,18 @@ module ARPM
         # No, so return yes if any versions of the package are installed
         return list_package.first
       end
+    end
+
+    def self.versions(package_name)
+      # Get all the packages
+      packages = JSON.parse(File.read(path)) rescue []
+
+      # Search for the specified package
+      list_package = packages.select { |p| p.keys[0] == package_name }.first
+
+      # Return an array of the versions
+      list_package[package_name]
+
     end
 
     private

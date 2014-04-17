@@ -30,17 +30,10 @@ module ARPM
         # Delete the path if it already exists
         FileUtils.rm_r(path) if File.exists?(path)
 
-        # Clone the repository!
-        repo = Git.clone(package.repository, path)
-
         # Was the version specified?
         version = package.latest_version unless version
 
-        # It does, so checkout the right version
-        repo.checkout("tags/#{version}")
-
-        # Register the package to the list
-        package.register(version)
+        package.install(version)
 
         puts "Installed #{name} version #{version}".green.bold
 
@@ -55,13 +48,61 @@ module ARPM
 
     desc "uninstall [PACKAGE] ([VERSION])", "Uninstall a package"
     def uninstall(name, version = nil)
-      package = ARPM::Package.search(name)
-      if package
+
+      if ARPM::List.includes?(name)
+
+        package = ARPM::Package.new(:name => name, :versions => ARPM::List.versions(name))
+
+        versions = package.installed_versions
+
+        # Was a version specified?
+        if version
+
+          # Yes it was, is it installed?
+          if versions.include?(version)
+
+            # Yes it is! Unintstall it
+            package.unintstall(version)
+
+            puts "#{package.name} version #{version} uninstalled".green.bold
+
+
+          else
+
+            # Nope, it's not installed
+            puts "Version #{version} of #{name} is not installed".red and return
+          end
+
+        else
+
+          if package.installed_versions.size > 0
+
+            # They've got multiple installed but haven't said which one
+            puts "Please specify a version to uninstall from this list:".red
+
+            package.installed_versions.each do |v|
+              puts "  #{v}"
+            end
+
+          else
+
+            version = installed_versions.first
+
+            # There's only one installed version
+            package.uninstall(version)
+
+            puts "#{package.name} version #{version} uninstalled".green.bold
+
+          end
+
+        end
 
       else
-        puts "No package named #{name} found".red
-        return false
+
+        puts "#{name} is not installed".red and return
+
       end
+
     end
   end
 end

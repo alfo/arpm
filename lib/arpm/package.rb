@@ -65,8 +65,35 @@ module ARPM
 
     end
 
+    def install(version)
+      # Clone the repository!
+      repo = Git.clone(repository, install_path(version))
+
+      # It does, so checkout the right version
+      repo.checkout("tags/#{version}")
+
+      # Register the package to the list
+      register(version)
+    end
+
+    def uninstall(version)
+      # Remove the files
+      FileUtils.rm_r(install_path(version))
+
+      # Unregister it
+      unregister(version)
+    end
+
     def register(version)
       ARPM::List.register(self, version)
+    end
+
+    def unregister(version)
+      ARPM::List.unregister(self, version)
+    end
+
+    def installed_versions
+      ARPM::List.versions(self.name)
     end
 
   end
