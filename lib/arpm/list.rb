@@ -32,6 +32,30 @@ module ARPM
 
     end
 
+    def self.unregister(package, version)
+
+      packages = JSON.parse(File.read(path)) rescue []
+
+      # Is any version of this pacakge installed?
+      if ARPM::List.includes?(package.name)
+        if package.installed_versions.size > 0
+
+          # Get the remaining versions
+          remaining_versions = packages.select { |p| p.keys[0] == package.name }.first[package.name] - [version]
+
+          packages.select { |p| p.keys[0] == package.name }.first[package.name] = remaining_versions
+        else
+          packages.delete(package.name)
+        end
+      end
+
+      # Write that shit down
+      f = File.open(path, 'w')
+      f.write(JSON.generate(packages, :quirks_mode => true))
+      f.close
+
+    end
+
     def self.includes?(package_name, version = nil)
 
       # Get all the packages

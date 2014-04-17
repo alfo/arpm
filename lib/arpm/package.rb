@@ -78,7 +78,7 @@ module ARPM
 
     def uninstall(version)
       # Remove the files
-      FileUtils.rm_r(install_path(version))
+      FileUtils.rm_r(install_path(version)) rescue ""
 
       # Unregister it
       unregister(version)

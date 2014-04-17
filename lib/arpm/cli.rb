@@ -62,7 +62,7 @@ module ARPM
           if versions.include?(version)
 
             # Yes it is! Unintstall it
-            package.unintstall(version)
+            package.uninstall(version)
 
             puts "#{package.name} version #{version} uninstalled".green.bold
 
