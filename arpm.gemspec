@@ -23,5 +23,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   spec.add_runtime_dependency "thor", "~> 0.19"
-  spec.add_runtime_dependency "colorize", "~> 0.7"
 end

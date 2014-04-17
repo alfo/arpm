@@ -49,7 +49,11 @@ module ARPM
     end
 
     def latest_version
-      versions.keys.first.to_s
+      if versions.kind_of?(Array)
+        versions.first
+      else
+        versions.keys.first.to_s
+      end
     end
 
     def install_path(version = nil)

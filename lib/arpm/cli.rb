@@ -107,26 +107,54 @@ module ARPM
 
     desc "update PACKAGE", "Update a package"
     def update(name)
+
+      # Check to see if it is installed?
       if ARPM::List.includes?(name)
 
-        package = ARPM::Package.new(:name => name, :versions => ARPM::List.versions(name))
+        # Get the current info
+        package = ARPM::Package.search(name)
 
-        if package.installed_versions > 1
+        # Does it exist?
+        if package
 
-          puts "#{name} has more than one version installed:".red
-          package.installed_versions.each do |v|
-            puts "  #{v}"
+          # Do we have more than one installed version?
+          if package.installed_versions.size > 1
+
+            # Yes, ask the user to deal with it
+            puts "#{name} has more than one version installed:".red
+            package.installed_versions.each do |v|
+              puts "  #{v}"
+            end
+            puts "Please run" + "arpm install #{name}".bold + "to install the latest one"
+
+          else
+
+            # No, just one installed version
+
+            current_version = package.installed_versions.first
+
+            # Does this package even need updating?
+            if current_version == package.latest_version
+
+              # Nope
+              puts "#{name} is already at the most recent version (#{package.latest_version})".red
+
+            else
+
+              # Yes, so let's actually fucking do it
+
+              package.uninstall(current_version)
+              package.install(package.latest_version)
+
+              puts "#{name} updated to version #{package.latest_version}".green.bold
+
+            end
+
           end
-          puts "Please run" + "arpm install #{name}".bold + "to install the latest one"
 
         else
 
-          version = package.installed_versions.first
-
-          package.uninstall(version)
-          package.install(package.latest_version)
-
-          puts "#{name} updated to version #{package.latest_version}".green.bold
+          puts "#{name} no longer exists".red and return
 
         end
 
@@ -135,5 +163,4 @@ module ARPM
       end
     end
   end
-end end end
 end
