@@ -2,7 +2,7 @@ module ARPM
   class Package
 
     attr_accessor :name
-    attr_accessor :author
+    attr_accessor :authors
     attr_accessor :versions
     attr_accessor :repository
 
@@ -14,7 +14,7 @@ module ARPM
     def self.search(name, exact_match = true)
 
       # Grab the package list
-      data = URI.parse("https://raw.githubusercontent.com/alfo/arpm-test/master/packages.json").read
+      data = URI.parse("https://raw.githubusercontent.com/alfo/arpm/master/packages.json").read
       packages = JSON.parse(data)
 
       if exact_match
@@ -46,7 +46,7 @@ module ARPM
 
           # Create a new package object and return it
           packages << Package.new(:name => remote_package["name"],
-                      :author => remote_package["author"],
+                      :authors => remote_package["authors"],
                       :repository => remote_package["repository"],
                       :versions => versions)
 
