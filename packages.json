@@ -1,0 +1,8 @@
+[
+	{
+		"name": "bergcloud",
+		"repository": "https://github.com/bergcloud/devshield-arduino.git",
+		"authors": ["Nick Ludlam", "Andy Huntington"],
+		"email": "info@bergcloud.com"
+	}
+]
