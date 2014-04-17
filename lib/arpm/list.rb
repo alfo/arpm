@@ -7,24 +7,20 @@ module ARPM
 
       packages = JSON.parse(File.read(path)) rescue []
 
-      list_package = packages.select { |p| p.keys[0] == package.name }
-
-      # Is a version already installed?
-      if list_package.any?
-
-        # Yes it is, grab the first (and only)
-        list_package = list_package.first
+      # Is any version of this pacakge installed?
+      if ARPM::List.includes?(package.name)
 
         # Is this version already installed?
-        unless list_package[package.name].include?(version)
+        unless ARPM::List.includes?(package.name, version)
 
           # No it isn't, so add this version to the list
-          list_package[package.name] << version
+          packages.select { |p| p.keys[0] == package.name }.first[package.name] << version
 
         end
+
       else
 
-        # It hasn't so add the whole package
+        # It isn't so add the whole package
         packages << {package.name => [version]}
       end
 
@@ -33,6 +29,29 @@ module ARPM
       f.close
 
     end
+
+    def self.includes?(package_name, version = nil)
+
+      # Get all the packages
+      packages = JSON.parse(File.read(path)) rescue []
+
+      # Search for the specified package
+      list_package = packages.select { |p| p.keys[0] == package_name }
+
+      # Was the version specified?
+      if version
+
+        # Yes, so only return yes if the specified version is installed
+        return list_package.first[package_name].include?(version)
+
+      else
+
+        # No, so return yes if any versions of the package are installed
+        return list_package.first
+      end
+    end
+
+    private
 
     def self.path
       ARPM::Config.base_directory + "/arpm.txt"
