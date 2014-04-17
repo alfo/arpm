@@ -65,8 +65,8 @@ module ARPM
 
     end
 
-    def register
-      ARPM::List.register(self)
+    def register(version)
+      ARPM::List.register(self, version)
     end
 
   end

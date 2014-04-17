@@ -44,8 +44,6 @@ module ARPM
 
         puts "Installed #{name} version #{version}".green.bold
 
-        end
-
       else
 
         puts "No package named #{name} found".red
