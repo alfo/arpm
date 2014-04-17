@@ -11,7 +11,7 @@ module ARPM
 
       package = ARPM::Package.search(name)
 
-      if package?
+      if package
 
         # Check to see if there actually any releases yet
         puts "No releases of #{name} yet".red and return unless package.latest_version
