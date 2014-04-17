@@ -7,6 +7,10 @@ module ARPM
       @content = content
     end
 
+    def self.location
+      Dir.pwd + "/Libfile"
+    end
+
     def dependencies
 
       packages = []
@@ -14,9 +18,9 @@ module ARPM
       content.gsub!(/\r\n?/, "\n")
       content.each_line do |line|
 
-        if line.start_with('lib')
+        if line.start_with?('lib')
             elements = line.scan(/"([^"]*)"/) + line.scan(/'([^']*)'/)
-            packages << {elements[0] => elements[1]}
+            packages << {elements[0][0] => elements[1][0]}
         end
 
       end

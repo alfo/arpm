@@ -166,15 +166,18 @@ module ARPM
     desc "list", "List the installed packages"
     def list
 
+      # Get a list of all the packages
       packages = ARPM::List.all
 
       puts "\nLocal Packages: \n".bold
 
+      # Loop over them
       packages.each do |p|
 
         name = p.keys.first
         versions = p[name]
 
+        # Print them out
         puts "#{name} (#{versions.join(', ')})".cyan
 
       end
@@ -186,12 +189,14 @@ module ARPM
     desc "search [PACKAGE]", "Search for packages with names containing [PACKAGE]"
     def search(name)
 
+      # Search for the package
       packages = ARPM::Package.search(name, false)
 
       if packages
 
+        # Loop over any results
         packages.each do |package|
-          puts "#{package.name} (#{package.latest_version})"
+          puts "#{package.name}-#{package.latest_version}"
         end
 
       else
@@ -202,13 +207,40 @@ module ARPM
     desc "bundle", "Install all a project's dependencies"
     def bundle
 
-      lib_file = Dir.pwd + "/Libfile"
+      # Find the Libfile
+      lib_file = ARPM::Libfile.location
 
       if File.exists?(lib_file)
 
+        # It exists, so get its contents and make an object
         lib_file = ARPM::Libfile.new(File.open(lib_file).read)
 
-        puts lib_file.dependencies
+        # Loop over the dependencies
+        lib_file.dependencies.each do |dependency|
+
+          name = dependency.keys[0]
+          version = dependency[dependency.keys[0]]
+
+          # Make sure the package exists
+          package = ARPM::Package.search(name)
+
+          if package
+
+            # Is it already installed?
+            if ARPM::List.includes?(name, version)
+              puts "Using #{name}-#{version}"
+            else
+
+              # No, so install it
+              package.install(version)
+            end
+          else
+
+            # The package doesn't exist
+            puts "Could not find #{name}".red
+          end
+
+        end
 
       end
 
