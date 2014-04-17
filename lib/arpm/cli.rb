@@ -199,6 +199,23 @@ module ARPM
       end
     end
 
+    desc "bundle", "Install all a project's dependencies"
+    def bundle
+
+      lib_file = Dir.pwd + "/Libfile"
+
+      if File.exists(lib_file)?
+
+        
+
+      else
+
+        puts "No Libfile found".red
+
+      emd
+
+    end
+
 
   end
 end
