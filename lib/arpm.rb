@@ -1,6 +1,6 @@
 require "json"
 require "open-uri"
-require "git"
+require "arpm/vendor/git/lib/git"
 
 require "arpm/config"
 require "arpm/version"
