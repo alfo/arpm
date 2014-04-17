@@ -9,52 +9,47 @@ module ARPM
       # Install all the things
       puts "Searching for packages...".cyan
 
-      puts package = ARPM::Package.search(name)
+      package = ARPM::Package.search(name)
 
-      # if package?
-      #
-      #   path = ARPM::Config.base_directory + name
-      #
-      #   path = path + "_#{version.gsub('.', '_')}" if version
-      #
-      #   puts "Cloning #{name} into #{path}"
-      #
-      #   FileUtils.rm_r(path) if File.exists?(path)
-      #   repo = Git.clone(package.first["repository"], path)
-      #
-      #   tags = []
-      #   repo.tags.each { |t| tags << t.name }
-      #
-      #   puts "No releases of #{name} yet".red and return unless tags.any?
-      #
-      #   if (version)
-      #
-      #     if tags.include?(version)
-      #       repo.checkout("tags/#{version}")
-      #       puts "Installed #{name} version #{version}".green.bold
-      #     else
-      #       FileUtils.rm_r(path)
-      #       puts "#{name} version #{version} does not exist".red
-      #     end
-      #
-      #   else
-      #
-      #     tags.sort! { |x,y| y <=> x }
-      #     tags.each { |t| tags.pop(t) unless t[0].is_number? }
-      #
-      #     version = tags.first
-      #
-      #     repo.checkout("tags/#{version}")
-      #
-      #     FileUtils.mv(path, "#{path}_#{version.gsub('.', '_')}")
-      #
-      #     puts "Installed #{name} Version #{version}".green.bold
-      #
-      #   end
-      #
-      # else
-      #   puts "No package named #{name} found".red
-      # end
+      if package?
+
+        # Check to see if there actually any releases yet
+        puts "No releases of #{name} yet".red and return unless package.latest_version
+
+        # Check that the requested version exists
+        if version and !package.versions.include(version)
+          puts "Version #{version} of #{name} doesn't exist".red and return
+        end
+
+        # Get the install path
+        path = package.install_path(version)
+
+        puts "Cloning #{name} into #{path}"
+
+        # Delete the path if it already exists
+        FileUtils.rm_r(path) if File.exists?(path)
+
+        # Clone the repository!
+        repo = Git.clone(package.first["repository"], path)
+
+        # Was the version specified?
+        if version
+
+          # It does, so checkout the right version
+          repo.checkout("tags/#{version}")
+          puts "Installed #{name} version #{version}".green.bold
+
+        else
+
+          # It does, so checkout the right version
+          repo.checkout("tags/#{package.latest_version}")
+          puts "Installed #{name} version #{version}".green.bold
+
+        end
+
+      else
+        puts "No package named #{name} found".red
+      end
 
     end
 
