@@ -64,5 +64,7 @@ module ARPM
       # Arduino doesn't like dots or dashes in library names
       path = path + "_#{version.gsub('.', '_')}"
 
+    end
+
   end
 end
