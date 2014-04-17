@@ -1,11 +1,10 @@
-require 'json'
-require 'open-uri'
-
 module ARPM
   class Package
 
     attr_accessor :name
     attr_accessor :author
+    attr_accessor :versions
+    attr_accessor :repository
 
     def initialize(opts = {})
       opts.each { |k,v| instance_variable_set("@#{k}", v) }
@@ -40,7 +39,7 @@ module ARPM
         # Create a new package object and return it
         package = Package.new(:name => remote_package["name"],
                     :author => remote_package["author"],
-                    :repo => remote_package["repository"],
+                    :repository => remote_package["repository"],
                     :versions => versions)
 
       else
@@ -50,7 +49,7 @@ module ARPM
     end
 
     def latest_version
-      versions.first
+      versions.keys.first.to_s
     end
 
     def install_path(version = nil)
@@ -64,6 +63,10 @@ module ARPM
       # Arduino doesn't like dots or dashes in library names
       path = path + "_#{version.gsub('.', '_')}"
 
+    end
+
+    def register
+      ARPM::List.register(self)
     end
 
   end

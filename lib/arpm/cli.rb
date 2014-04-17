@@ -3,7 +3,7 @@ require "fileutils"
 module ARPM
   class CLI < Thor
 
-    desc "install", "Install a package"
+    desc "install [PACKAGE] ([VERSION])", "Install a package"
     def install(name, version = nil)
 
       # Install all the things
@@ -17,8 +17,9 @@ module ARPM
         puts "No releases of #{name} yet".red and return unless package.latest_version
 
         # Check that the requested version exists
-        if version and !package.versions.include(version)
-          puts "Version #{version} of #{name} doesn't exist".red and return
+        if version and !package.versions.include?(version)
+          puts "Version #{version} of #{name} doesn't exist".red
+          return false
         end
 
         # Get the install path
@@ -30,28 +31,39 @@ module ARPM
         FileUtils.rm_r(path) if File.exists?(path)
 
         # Clone the repository!
-        repo = Git.clone(package.first["repository"], path)
+        repo = Git.clone(package.repository, path)
 
         # Was the version specified?
-        if version
+        version = package.latest_version unless version
 
-          # It does, so checkout the right version
-          repo.checkout("tags/#{version}")
-          puts "Installed #{name} version #{version}".green.bold
+        # It does, so checkout the right version
+        repo.checkout("tags/#{version}")
 
-        else
+        # Register the package to the list
+        package.register(version)
 
-          # It does, so checkout the right version
-          repo.checkout("tags/#{package.latest_version}")
-          puts "Installed #{name} version #{version}".green.bold
+        puts "Installed #{name} version #{version}".green.bold
 
         end
 
       else
+
         puts "No package named #{name} found".red
+        return false
+
       end
 
     end
 
+    desc "uninstall [PACKAGE] ([VERSION])", "Uninstall a package"
+    def uninstall(name, version = nil)
+      package = ARPM::Package.search(name)
+      if package
+
+      else
+        puts "No package named #{name} found".red
+        return false
+      end
+    end
   end
 end

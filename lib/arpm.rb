@@ -7,5 +7,7 @@ require "arpm/config"
 require "arpm/version"
 require "arpm/string"
 require "arpm/os"
+
+require "arpm/list"
 require "arpm/package"
 require "arpm/cli"
