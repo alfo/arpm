@@ -75,7 +75,7 @@ module ARPM
 
         else
 
-          if package.installed_versions.size > 0
+          if package.installed_versions.size > 1
 
             # They've got multiple installed but haven't said which one
             puts "Please specify a version to uninstall from this list:".red
@@ -103,6 +103,36 @@ module ARPM
 
       end
 
+    end
+
+    desc "update PACKAGE", "Update a package"
+    def update(name)
+      if ARPM::List.includes?(name)
+
+        package = ARPM::Package.new(:name => name, :versions => ARPM::List.versions(name))
+
+        if package.installed_versions > 1
+
+          puts "#{name} has more than one version installed:".red
+          package.installed_versions.each do |v|
+            puts "  #{v}"
+          end
+          puts "Please run" + "arpm install #{name}".bold + "to install the latest one"
+
+        else
+
+          version = package.installed_versions.first
+
+          package.uninstall(version)
+          package.install(package.latest_version)
+
+          puts "#{name} updated to version #{package.latest_version}".green.bold
+
+        end
+
+      else
+        puts "#{name} is not installed yet".red and return
+      end
     end
   end
 end
