@@ -182,5 +182,23 @@ module ARPM
       puts "\n"
 
     end
+
+    desc "search [PACKAGE]", "Search for packages with names containing [PACKAGE]"
+    def search(name)
+
+      packages = ARPM::Package.search(name, false)
+
+      if packages
+
+        packages.each do |package|
+          puts "#{package.name} (#{package.latest_version})"
+        end
+
+      else
+        puts "No results".red
+      end
+    end
+
+
   end
 end

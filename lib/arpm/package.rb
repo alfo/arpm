@@ -11,36 +11,52 @@ module ARPM
     end
 
     # Search for a new package
-    def self.search(name)
+    def self.search(name, exact_match = true)
 
       # Grab the package list
       data = URI.parse("https://raw.githubusercontent.com/alfo/arpm-test/master/packages.json").read
       packages = JSON.parse(data)
 
-      # Search the packages for one with the same name
-      remote_package = packages.select { |p| p['name'] == name }
+      if exact_match
+
+        # Search the packages for one with the same name
+        remote_packages = packages.select { |p| p['name'] == name }
+
+      else
+
+        # Search for packages with similar names and return them
+        remote_packages = packages.select { |p| p['name'].include? name }
+
+      end
 
       # Did the search return any results?
-      if remote_package.any?
+      if remote_packages.any?
 
-        # It did, so grab the first (and only) package with that name
-        remote_package = remote_package.first
+        packages = []
+        remote_packages.each do |remote_package|
 
-        # Get a list of tags from the remote repo
+          # Get a list of tags from the remote repo
+          tags = Git::Lib.new.ls_remote(remote_package["repository"])["tags"]
 
-        tags = Git::Lib.new.ls_remote(remote_package["repository"])["tags"]
+          # Delete any tags that aren't version numbers
+          tags.each { |t| tags.delete(t) unless t[0].is_number? }
 
-        # Delete any tags that aren't version numbers
-        tags.each { |t| tags.delete(t) unless t[0].is_number? }
+          # Sort the tags newest to oldest
+          versions = Hash[tags.sort.reverse]
 
-        # Sort the tags newest to oldest
-        versions = Hash[tags.sort.reverse]
+          # Create a new package object and return it
+          packages << Package.new(:name => remote_package["name"],
+                      :author => remote_package["author"],
+                      :repository => remote_package["repository"],
+                      :versions => versions)
 
-        # Create a new package object and return it
-        package = Package.new(:name => remote_package["name"],
-                    :author => remote_package["author"],
-                    :repository => remote_package["repository"],
-                    :versions => versions)
+        end
+
+        if exact_match
+          return packages.first
+        else
+          return packages
+        end
 
       else
         # The package doesn't exist, so return false
