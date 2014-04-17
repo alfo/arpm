@@ -204,18 +204,15 @@ module ARPM
 
       lib_file = Dir.pwd + "/Libfile"
 
-      if File.exists(lib_file)?
+      if File.exists?(lib_file)
 
-        
+        lib_file = ARPM::Libfile.new(File.open(lib_file).read)
 
-      else
+        puts lib_file.dependencies
 
-        puts "No Libfile found".red
-
-      emd
+      end
 
     end
-
 
   end
 end
