@@ -89,6 +89,13 @@ module ARPM
 
     end
 
+    def self.all
+      # Get all the packages
+      packages = JSON.parse(File.read(path)) rescue []
+
+      packages
+    end
+
     private
 
     def self.path

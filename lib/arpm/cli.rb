@@ -162,5 +162,25 @@ module ARPM
         puts "#{name} is not installed yet".red and return
       end
     end
+
+    desc "list", "List the installed packages"
+    def list
+
+      packages = ARPM::List.all
+
+      puts "\nLocal Packages: \n".bold
+
+      packages.each do |p|
+
+        name = p.keys.first
+        versions = p[name]
+
+        puts "#{name} (#{versions.join(', ')})".cyan
+
+      end
+
+      puts "\n"
+
+    end
   end
 end
