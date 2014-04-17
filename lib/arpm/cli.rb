@@ -7,7 +7,7 @@ module ARPM
     def install(name, version = nil)
 
       # Install all the things
-      puts "Searching for packages...".magenta
+      puts "Searching for packages...".cyan
 
       data = URI.parse("https://raw.githubusercontent.com/alfo/arpm-test/master/packages.json").read
 
@@ -19,39 +19,38 @@ module ARPM
 
         path = ARPM::Config.base_directory + name
 
-        path = path + "-#{version}" if version
+        path = path + "_#{version.gsub('.', '_')}" if version
 
         puts "Cloning #{name} into #{path}"
 
-        p package["repository"]
-
-        return
-
-        repo = Git.clone(package["repository"], path)
+        FileUtils.rm_r(path) if File.exists?(path)
+        repo = Git.clone(package.first["repository"], path)
 
         tags = []
         repo.tags.each { |t| tags << t.name }
+
+        puts "No releases of #{name} yet".red and return unless tags.any?
 
         if (version)
 
           if tags.include?(version)
             repo.checkout("tags/#{version}")
-            puts "Installed #{name} Version #{version}".green.bold
+            puts "Installed #{name} version #{version}".green.bold
           else
-            File.rm_r(path)
-            puts "#{name} Version #{version} does not exist".red
+            FileUtils.rm_r(path)
+            puts "#{name} version #{version} does not exist".red
           end
 
         else
 
           tags.sort! { |x,y| y <=> x }
-          tags.each { |t| tags.pop(e) unless e[0].is_number? }
+          tags.each { |t| tags.pop(t) unless t[0].is_number? }
 
           version = tags.first
 
           repo.checkout("tags/#{version}")
 
-          FileUtils.mv(path, "#{path}-#{version}")
+          FileUtils.mv(path, "#{path}_#{version.gsub('.', '_')}")
 
           puts "Installed #{name} Version #{version}".green.bold
 
